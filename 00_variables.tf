@@ -1,4 +1,4 @@
-##### General Configs#####
+######## General Configs ########
 
 variable "region" {}
 

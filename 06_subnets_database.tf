@@ -6,7 +6,7 @@ locals {
   }
 }
 
-##### SUBNETS
+######## SUBNETS ########
 resource "aws_subnet" "subnets_database" {
   for_each = local.subnets_database
 

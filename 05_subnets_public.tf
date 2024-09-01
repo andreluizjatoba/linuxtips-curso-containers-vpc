@@ -6,7 +6,7 @@ locals {
   }
 }
 
-##### SUBNETS
+######## SUBNETS ########
 resource "aws_subnet" "subnets_public" {
   for_each = local.subnets_public
 
@@ -19,7 +19,7 @@ resource "aws_subnet" "subnets_public" {
   }
 }
 
-##### ROUTE TABLE
+######## ROUTE TABLE ########
 resource "aws_route_table" "public_internet_access" {
   vpc_id = aws_vpc.main.id
 
@@ -28,7 +28,7 @@ resource "aws_route_table" "public_internet_access" {
   }
 }
 
-##### DEFAULT ROUTE
+######## DEFAULT ROUTE ########
 resource "aws_route" "public_access" {
   depends_on             = [aws_internet_gateway.igw]
   route_table_id         = aws_route_table.public_internet_access.id
@@ -36,7 +36,7 @@ resource "aws_route" "public_access" {
   gateway_id             = aws_internet_gateway.igw.id
 }
 
-##### ROUTE TABLE ASSOCIATION
+######## ROUTE TABLE ASSOCIATION ########
 resource "aws_route_table_association" "pulic" {
   for_each = local.subnets_public
 
