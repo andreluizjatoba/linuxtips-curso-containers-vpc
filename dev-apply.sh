@@ -1,3 +1,3 @@
 #!/bin/bash
 
-AWS_PROFILE=andre-labs-dev terraform destroy -var-file=environment/dev/terraform.tfvars
+AWS_PROFILE=andre-labs-dev terraform appy -var-file=environment/dev/terraform.tfvars
