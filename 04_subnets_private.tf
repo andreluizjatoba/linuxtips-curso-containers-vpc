@@ -6,7 +6,7 @@ locals {
   }
 }
 
-##### SUBNETS
+######## SUBNETS ########
 resource "aws_subnet" "subnets_private" {
   for_each = local.subnets_private
 
@@ -19,7 +19,7 @@ resource "aws_subnet" "subnets_private" {
   }
 }
 
-##### ROUTE TABLE
+######## ROUTE TABLE ########
 resource "aws_route_table" "private_internet_access" {
   for_each = local.subnets_private
 
@@ -30,7 +30,7 @@ resource "aws_route_table" "private_internet_access" {
   }
 }
 
-##### DEFAULT ROUTE
+######## DEFAULT ROUTE ########
 resource "aws_route" "private_access" {
   for_each = local.subnets_private
 
@@ -39,7 +39,7 @@ resource "aws_route" "private_access" {
   nat_gateway_id         = aws_nat_gateway.nat["${each.key}"].id
 }
 
-##### ROUTE TABLE ASSOCIATION
+######## ROUTE TABLE ASSOCIATION ########
 resource "aws_route_table_association" "private" {
   for_each = local.subnets_private
 
