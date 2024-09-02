@@ -1,48 +1,40 @@
-locals {
-  subnets_private = {
-    a = "10.0.0.0/20"
-    b = "10.0.16.0/20"
-    c = "10.0.32.0/20"
-  }
-}
-
 ######## SUBNETS ########
 resource "aws_subnet" "subnets_private" {
-  for_each = local.subnets_private
+  count = length(var.subnets_private_cidrs)
 
   vpc_id            = aws_vpc.main.id
-  cidr_block        = each.value
-  availability_zone = format("%s${each.key}", var.region)
+  cidr_block        = element(var.subnets_private_cidrs, count.index)
+  availability_zone = element(var.azs, count.index)
 
   tags = {
-    Name = format("%s-private-subnet-1${each.key}", var.project_name)
+    Name = "${var.project_name}-private-subnet-${element(var.azs, count.index)}"
   }
 }
 
-######## ROUTE TABLE ########
+######## ROUTE TABLES ########
 resource "aws_route_table" "private_internet_access" {
-  for_each = local.subnets_private
+  count = length(var.subnets_private_cidrs)
 
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = format("%s-private-1-${each.key}", var.project_name)
+    Name = format("%s-rtb-private-subnet-${element(var.azs, count.index)}", var.project_name)
   }
 }
 
-######## DEFAULT ROUTE ########
+######## ROUTES ########
 resource "aws_route" "private_access" {
-  for_each = local.subnets_private
+  count = length(var.subnets_private_cidrs)
 
-  route_table_id         = aws_route_table.private_internet_access["${each.key}"].id
+  route_table_id         = aws_route_table.private_internet_access[count.index].id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat["${each.key}"].id
+  nat_gateway_id         = aws_nat_gateway.nat[count.index].id
 }
 
-######## ROUTE TABLE ASSOCIATION ########
-resource "aws_route_table_association" "private" {
-  for_each = local.subnets_private
+######## ROUTE TABLE ASSOCIATIONS ########
+resource "aws_route_table_association" "subnets_private" {
+  count = length(var.subnets_private_cidrs)
 
-  subnet_id      = aws_subnet.subnets_private["${each.key}"].id
-  route_table_id = aws_route_table.private_internet_access["${each.key}"].id
+  subnet_id      = aws_subnet.subnets_private[count.index].id
+  route_table_id = aws_route_table.private_internet_access[count.index].id
 }

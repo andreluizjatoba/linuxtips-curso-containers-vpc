@@ -1,31 +1,23 @@
 ######## VPC ########
+output "vpc_id" {
+  value       = aws_vpc.main.id
+  description = "ID da VPC"
+}
 output "ssm_vpc_id" {
-  value = aws_ssm_parameter.vpc.id
+  value = [
+    for vpc in aws_ssm_parameter.vpc_id : "${vpc.id}"
+  ]
 }
 
-######## SUBNETS PRIVATE ########
-output "subnets_private" {
-  value = tomap({
-    for s, ssm in aws_ssm_parameter.subnets_private : s => {
-      ssm = ssm.id
-    }
-  })
+##### SUBNETS ########
+output "subnets_ids" {
+  value = [
+    for subnet in concat(aws_subnet.subnets_private, aws_subnet.subnets_public, aws_subnet.subnets_database) :
+    "${subnet.tags["Name"]} - ${subnet.id}"
+  ]
 }
-
-##### SUBNETS PUBLIC ########
-output "subnets_public" {
-  value = tomap({
-    for s, ssm in aws_ssm_parameter.subnets_public : s => {
-      ssm = ssm.id
-    }
-  })
-}
-
-##### SUBNETS DATABASE ########
-output "subnets_database" {
-  value = tomap({
-    for s, ssm in aws_ssm_parameter.subnets_database : s => {
-      ssm = ssm.id
-    }
-  })
+output "ssm_subnets_id" {
+  value = [
+    for subnet in aws_ssm_parameter.subnets_id : "${subnet.id}"
+  ]
 }

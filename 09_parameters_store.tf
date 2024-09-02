@@ -1,41 +1,18 @@
-locals {
-  subnets = {
-    a = "1a"
-    b = "1b"
-    c = "1c"
-  }
-}
-
 ##### VPC ########
-resource "aws_ssm_parameter" "vpc" {
+resource "aws_ssm_parameter" "vpc_id" {
+  count = var.enabled_ssm_parameters ? 1 : 0
+
   name  = format("/%s/vpc/vpc_id", var.project_name)
   type  = "String"
   value = aws_vpc.main.id
 }
 
-######## SUBNETS PRIVATE ########
-resource "aws_ssm_parameter" "subnets_private" {
-  for_each = local.subnets
+######## SUBNETS ########
+resource "aws_ssm_parameter" "subnets_id" {
+  count = var.enabled_ssm_parameters ? length(concat(aws_subnet.subnets_private[*].id, aws_subnet.subnets_public[*].id, aws_subnet.subnets_database[*].id)) : 0
 
-  name  = format("/%s/vpc/subnet_private_${each.value}", var.project_name)
+  name = format("/%s/vpc/%s", var.project_name, element(concat(aws_subnet.subnets_private[*].tags["Name"], aws_subnet.subnets_public[*].tags["Name"], aws_subnet.subnets_database[*].tags["Name"]), count.index))
+
   type  = "String"
-  value = aws_subnet.subnets_private["${each.key}"].id
-}
-
-######## SUBNETS PUBLIC ########
-resource "aws_ssm_parameter" "subnets_public" {
-  for_each = local.subnets
-
-  name  = format("/%s/vpc/subnet_public_${each.value}", var.project_name)
-  type  = "String"
-  value = aws_subnet.subnets_public["${each.key}"].id
-}
-
-######## SUBNETS DATABASE ########
-resource "aws_ssm_parameter" "subnets_database" {
-  for_each = local.subnets
-
-  name  = format("/%s/vpc/subnet_database_${each.value}", var.project_name)
-  type  = "String"
-  value = aws_subnet.subnets_database["${each.key}"].id
+  value = element(concat(aws_subnet.subnets_private[*].id, aws_subnet.subnets_public[*].id, aws_subnet.subnets_database[*].id), count.index)
 }
