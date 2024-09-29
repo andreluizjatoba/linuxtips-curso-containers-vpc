@@ -12,7 +12,7 @@ provider "aws" {
   default_tags {
     tags = {
       managed     = "terraform"
-      project     = "linuxtips-vpc"
+      project     = "${var.project_name}"
       environment = "${var.environment}"
 
     }

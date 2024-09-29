@@ -9,7 +9,7 @@ help:
 ENVIRONMENT ?= dev
 
 # Variável de ambiente, padrão para o AWS Profile
-AWS_PROFILE ?= default
+AWS_PROFILE ?= andre-labs-dev
 
 # Variável de ambiente, padrão para a região da AWS
 AWS_REGION ?= us-east-1

@@ -16,8 +16,18 @@ output "subnets_ids" {
     "${subnet.tags["Name"]} - ${subnet.id}"
   ]
 }
-output "ssm_subnets_id" {
+output "ssm_subnets_private_id" {
   value = [
-    for subnet in aws_ssm_parameter.subnets_id : "${subnet.id}"
+    for subnet in aws_ssm_parameter.subnets_private : "${subnet.id}"
+  ]
+}
+output "ssm_subnets_public_id" {
+  value = [
+    for subnet in aws_ssm_parameter.subnets_public : "${subnet.id}"
+  ]
+}
+output "ssm_subnets_database_id" {
+  value = [
+    for subnet in aws_ssm_parameter.subnets_database : "${subnet.id}"
   ]
 }
